@@ -59,15 +59,14 @@ def scan_barcodes():
         writeUnmatchedProducts()
         writeProductData()
 
-        print(unmatched_products)
 
 
 def find_product(barcode, name):
-    print(barcode)
+
 
     try:
         url = "https://api.barcodelookup.com/v2/products?barcode=" + barcode + "&formatted=y&key=" + key
-        print(url)
+
         with urllib.request.urlopen(url) as url:
             data = json.loads(url.read().decode())
 
@@ -100,7 +99,7 @@ def find_product(barcode, name):
 
         buildPath(categories, barcode, image)
 
-        print(categories)
+
 
     except:
 
