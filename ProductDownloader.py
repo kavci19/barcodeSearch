@@ -1,8 +1,8 @@
 import os
 import csv
+import time
 import urllib.request
 import json
-import pprint
 import requests
 
 unmatched_products = []
@@ -36,8 +36,10 @@ def scan_barcodes():
                 line_count += 1
                 continue
 
-            elif line_count > 100:
-                break
+            elif line_count%100 == 0:
+                print("Sleeping after product: " + str(line_count))
+                time.sleep(120)
+
 
             else:
 
@@ -85,9 +87,6 @@ def find_product(barcode, name):
         manufacturer = data["products"][0]["manufacturer"]
 
         weight = data["products"][0]["weight"]
-
-        print("Entire Response:")
-        pprint.pprint(data)
 
         mapping = [barcode, name, brand, category, manufacturer, image, weight, description]
         barcodeNameMap.append(mapping)
