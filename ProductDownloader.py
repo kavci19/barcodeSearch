@@ -41,15 +41,15 @@ def scan_barcodes():
                 time.sleep(120)
 
 
-            else:
 
-                progress = (line_count / 1791) * 100
 
-                print(str(round(progress, 2)) + '% done')
+            progress = (line_count / 1791) * 100
 
-                barcode = fixBarcode(row[0].strip())
+            print(str(round(progress, 2)) + '% done')
 
-                find_product(barcode, row[1])
+            barcode = fixBarcode(row[0].strip())
+
+            find_product(barcode, row[1])
 
             line_count += 1
 
