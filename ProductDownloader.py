@@ -32,7 +32,7 @@ def scan_barcodes():
         for row in csv_reader:
             print()
 
-            if line_count <= 10:
+            if line_count <= 846:
                 line_count += 1
                 continue
 
