@@ -5,16 +5,16 @@ import urllib.request
 import json
 import requests
 
-unmatched_products = []
-barcodeNameMap = []
+
 
 SAVE_FOLDER = 'Product_Images'
 PRODUCT_DATA = 'Product_Data'
 ALL_IMAGES = 'All_Images'
-key = ''  # copy and paste API key in between these quotes
+key = 'vu0o8puy6jahqrepjci5trmfdy3ynu'  # copy and paste API key in between these quotes
 
 
 def main():
+
     if not os.path.exists(SAVE_FOLDER):
         os.mkdir(SAVE_FOLDER)
 
@@ -32,9 +32,10 @@ def scan_barcodes():
         for row in csv_reader:
             print()
 
-            if line_count == 0:
+            if line_count <= 10:
                 line_count += 1
                 continue
+
 
             elif line_count%100 == 0:
                 print("Sleeping after product: " + str(line_count))
@@ -43,9 +44,9 @@ def scan_barcodes():
 
 
 
-            progress = (line_count / 1791) * 100
 
-            print(str(round(progress, 2)) + '% done')
+
+            print(line_count)
 
             barcode = fixBarcode(row[0].strip())
 
@@ -56,10 +57,7 @@ def scan_barcodes():
         print('Processed ' + str(line_count) + ' lines')
         print('Done')
 
-        print()
 
-        writeUnmatchedProducts()
-        writeProductData()
 
 
 
@@ -89,7 +87,13 @@ def find_product(barcode, name):
         weight = data["products"][0]["weight"]
 
         mapping = [barcode, name, brand, category, manufacturer, image, weight, description]
-        barcodeNameMap.append(mapping)
+
+        print('found: ')
+        print(mapping)
+        print()
+
+        mapping.reverse()
+        writeProductData(mapping)
 
         split_categories = category.split('>')
         categories = []
@@ -102,25 +106,38 @@ def find_product(barcode, name):
 
     except:
 
-        unmatched_products.append([barcode, name])
+        print('Could not find: ' + barcode + ', ' + name)
+        print()
+        writeUnmatchedProducts([barcode, name])
 
     return
 
 
-def writeUnmatchedProducts():
-    with open('Unmatched_Products.csv', mode='w') as unmatched:
-        writer = csv.writer(unmatched, quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-        for product in unmatched_products:
-            writer.writerow(product)
 
 
-def writeProductData():
-    with open('Product_Data.csv', mode='w') as data:
-        writer = csv.writer(data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+def writeUnmatchedProducts(product):
 
-        for product in barcodeNameMap:
-            writer.writerow(product)
+    row = ""
+    for item in product:
+        row = item + ', ' + row
+
+    file = open('Unmatched_Products.csv', 'a')
+    file.write(row[:-2] + '\n')
+    file.close()
+
+
+
+def writeProductData(product):
+
+    row = ""
+    for item in product:
+        row = item + ', ' + row
+
+    file = open('Product_Data.csv', 'a')
+    file.write(row[:-2] + '\n')
+    file.close()
+
+
 
 
 def buildPath(categories, barcode, image):
@@ -138,13 +155,15 @@ def buildPath(categories, barcode, image):
 
     path = path + '/' + barcode + '.jpg'
 
-    print('Path: ' + path)
     with open(path, 'wb') as handler:
         handler.write(img_data)
 
     path = './All_Images/' + barcode + '.jpg'
     with open(path, 'wb') as handler:
         handler.write(img_data)
+
+
+
 
 
 def fixBarcode(barcode):
@@ -154,6 +173,8 @@ def fixBarcode(barcode):
         barcode = '0' + barcode
 
     return barcode
+
+
 
 
 if __name__ == '__main__':
