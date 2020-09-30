@@ -5,20 +5,33 @@ import urllib.request
 import json
 import requests
 
-SAVE_FOLDER = 'Product_Images'
-PRODUCT_DATA = '73rd-st-product'
-ALL_IMAGES = 'All_Images'
+#Define the global variables, or CSV files to be used. Do not include .csv in the variable values.
+
+ALL_IMAGES_WITH_SUBDIRECTORIES = 'Product_Images' #name of main folder to save product images with a subdirectory structure according to the product's categories. Default is Product_Images
+
+PRODUCT_DATA_OUTPUT = 'Product_Data' #name of the CSV file to write product data OUTPUT to. Rename this to match the name of the CSV file to output product data to if necessary
+
+INPUT_BARCODES = 'Barcodes' #name of the csv file to read barcodes from and search the API for, aka the input hardware store's product barcode list. Rename this to match the name of
+                            #the CSV file to read barcodes from if necessary
+
+ALL_IMAGES_NO_SUBDIRECTORIES = 'All_Images' #name of the folder to save all product images without subdirectory structure, aka "image dump".
+
+UNMATCHED_PRODUCTS = 'Unmatched_Products' #name of the CSV file to write the products that the API did not return information for.
+
 key = 'vu0o8puy6jahqrepjci5trmfdy3ynu'  # copy and paste API key in between these quotes
+
 read_barcodes = set()
+
+
 def main():
-    if not os.path.exists(SAVE_FOLDER):
-        os.mkdir(SAVE_FOLDER)
-    if not os.path.exists(ALL_IMAGES):
-        os.mkdir(ALL_IMAGES)
+    if not os.path.exists(ALL_IMAGES_WITH_SUBDIRECTORIES):
+        os.mkdir(ALL_IMAGES_WITH_SUBDIRECTORIES)
+    if not os.path.exists(ALL_IMAGES_NO_SUBDIRECTORIES):
+        os.mkdir(ALL_IMAGES_NO_SUBDIRECTORIES)
     scan_barcodes()
 
 def scan_barcodes():
-    with open('73rd-st-barcodes.csv') as csv_file:
+    with open(INPUT_BARCODES + '.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
@@ -76,7 +89,7 @@ def writeUnmatchedProducts(product):
         row = ""
         for item in product:
             row = item + '@' + row
-        file = open('73rd-st-unmatched-products.csv', 'a')
+        file = open(UNMATCHED_PRODUCTS + '.csv', 'a')
         file.write(row[:-2] + '\n')
         file.close()
     except:
@@ -88,7 +101,7 @@ def writeProductData(product):
         row = ""
         for item in product:
             row = item + '@' + row
-        file = open('73rd-st-product-data.csv', 'a')
+        file = open(PRODUCT_DATA_OUTPUT + '.csv', 'a')
         file.write(row[:-2] + '\n')
         file.close()
     except:
